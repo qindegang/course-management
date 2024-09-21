@@ -28,6 +28,14 @@ public class SignUpServiceImpl implements SignUpService {
         student.signUp(course);
     }
 
+    @Override
+    public void cancelSignUp(String email, String courseName)
+            throws InvalidStudentEmailException, InvalidCourseNameException {
+        final Student student = this.findStudent(email);
+        final Course course = this.findCourse(courseName);
+        student.cancelSignUp(course);
+    }
+
     private Course findCourse(String courseName) {
         return this.courseRepository
                 .findByName(courseName)

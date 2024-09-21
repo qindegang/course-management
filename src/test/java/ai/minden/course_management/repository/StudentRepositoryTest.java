@@ -21,9 +21,6 @@ public class StudentRepositoryTest {
     @Autowired
     private StudentRepository studentRepository;
 
-    @Autowired
-    private CourseRepository courseRepository;
-
     @BeforeEach
     public void setUp() {
         studentAlice = new Student(ALICE);

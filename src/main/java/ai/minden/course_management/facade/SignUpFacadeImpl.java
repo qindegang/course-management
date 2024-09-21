@@ -18,4 +18,10 @@ public class SignUpFacadeImpl implements SignUpFacade {
             throws InvalidStudentEmailException, InvalidCourseNameException {
         this.signUpService.signUp(email, courseName);
     }
+
+    @Override
+    public void cancelSignUp(String email, String courseName)
+            throws InvalidStudentEmailException, InvalidCourseNameException {
+        this.signUpService.cancelSignUp(email, courseName);
+    }
 }

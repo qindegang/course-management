@@ -25,4 +25,11 @@ public class SignUpFacadeTest {
         signUpFacade.signUp(CINDY, ENGLISH);
         verify(signUpService).signUp(CINDY, ENGLISH);
     }
+
+    @Test
+    public void cancelSignUp() {
+        signUpFacade.cancelSignUp(CINDY, ENGLISH);
+        verify(signUpService).cancelSignUp(CINDY, ENGLISH);
+    }
+
 }

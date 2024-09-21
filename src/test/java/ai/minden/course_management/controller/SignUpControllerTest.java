@@ -62,4 +62,41 @@ public class SignUpControllerTest {
                         .content(requestBody))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void cancelSignUp_success() throws Exception {
+        var requestBody = String.format("{\"email\": \"%s\", \"course\": \"%s\"}", CINDY, ENGLISH);
+
+        doNothing().when(signUpFacade).cancelSignUp(CINDY, ENGLISH);
+        mvc.perform(MockMvcRequestBuilders
+                        .delete("/signups")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void cancelSignUp_invalidEmail() throws Exception {
+        var requestBody = String.format("{\"email\": \"%s\", \"course\": \"%s\"}", CINDY, ENGLISH);
+        doThrow(new InvalidStudentEmailException("dummy")).when(signUpFacade).cancelSignUp(CINDY, ENGLISH);
+        mvc.perform(MockMvcRequestBuilders
+                        .delete("/signups")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void cancelSignUp_invalidCourse() throws Exception {
+        var requestBody = String.format("{\"email\": \"%s\", \"course\": \"%s\"}", CINDY, ENGLISH);
+        doThrow(new InvalidCourseNameException("dummy")).when(signUpFacade).cancelSignUp(CINDY, ENGLISH);
+        mvc.perform(MockMvcRequestBuilders
+                        .delete("/signups")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
 }

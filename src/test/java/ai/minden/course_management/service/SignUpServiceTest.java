@@ -69,4 +69,33 @@ public class SignUpServiceTest {
             signUpService.signUp(CINDY, ENGLISH);
         }).isInstanceOf(InvalidCourseNameException.class);
     }
+
+    @Test
+    public void cancelSignUp_success() {
+        when(this.courseRepository.findByName(ENGLISH)).thenReturn(Optional.of(courseEnglish));
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
+        studentCindy.getCourses().add(courseEnglish);
+
+        signUpService.cancelSignUp(CINDY, ENGLISH);
+        assertThat(studentCindy.getCourses()).doesNotContain(courseEnglish);
+    }
+
+    @Test
+    public void cancelSignUp_invalidEmail() {
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            signUpService.cancelSignUp(CINDY, ENGLISH);
+        }).isInstanceOf(InvalidStudentEmailException.class);
+    }
+
+    @Test
+    public void cancelSignUp_invalidCourse() {
+        when(this.courseRepository.findByName(ENGLISH)).thenReturn(Optional.empty());
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
+
+        assertThatThrownBy(() -> {
+            signUpService.cancelSignUp(CINDY, ENGLISH);
+        }).isInstanceOf(InvalidCourseNameException.class);
+    }
 }

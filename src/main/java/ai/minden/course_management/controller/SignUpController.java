@@ -5,6 +5,7 @@ import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
 import ai.minden.course_management.facade.SignUpFacade;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,6 +30,17 @@ public class SignUpController {
             throws InvalidStudentEmailException, InvalidCourseNameException {
         try {
             this.signUpFacade.signUp(signUpRequest.getEmail(), signUpRequest.getCourse());
+        } catch (InvalidStudentEmailException | InvalidCourseNameException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
+    }
+
+    @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelSignUp(@RequestBody @Validated SignUpRequest signUpRequest)
+            throws InvalidStudentEmailException, InvalidCourseNameException {
+        try {
+            this.signUpFacade.cancelSignUp(signUpRequest.getEmail(), signUpRequest.getCourse());
         } catch (InvalidStudentEmailException | InvalidCourseNameException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
         }
