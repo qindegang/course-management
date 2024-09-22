@@ -1,8 +1,11 @@
 package ai.minden.course_management.service;
 
 import ai.minden.course_management.entity.Course;
+import ai.minden.course_management.entity.Student;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Set;
 
@@ -38,4 +41,16 @@ public interface SignUpService {
      * @throws InvalidStudentEmailException if the email is invalid
      */
     Set<Course> findCourses(String email) throws InvalidStudentEmailException;
+
+    /**
+     * find classmates of a student's course, if the student does not take this course, no classmates is returned
+     *
+     * @param email      email of the student
+     * @param courseName name of the course
+     * @param pageable   pagination information
+     * @return a page of classmates
+     * @throws InvalidStudentEmailException if the email is invalid
+     * @throws InvalidCourseNameException   if the course name is invalid
+     */
+    Page<Student> findClassMates(String email, String courseName, Pageable pageable) throws InvalidStudentEmailException, InvalidCourseNameException;
 }

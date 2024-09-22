@@ -1,9 +1,13 @@
 package ai.minden.course_management.facade;
 
 import ai.minden.course_management.dto.CourseDTO;
+import ai.minden.course_management.dto.PageDTO;
+import ai.minden.course_management.dto.StudentDTO;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
 import ai.minden.course_management.service.SignUpService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -36,5 +40,13 @@ public class SignUpFacadeImpl implements SignUpFacade {
                 .map(c -> new CourseDTO(c.getName()))
                 .sorted(Comparator.comparing(CourseDTO::name))
                 .toList();
+    }
+
+    @Override
+    public PageDTO<StudentDTO> findClassMates(String email, String courseName, Pageable pageable)
+            throws InvalidStudentEmailException, InvalidCourseNameException {
+        final Page<StudentDTO> page = this.signUpService.findClassMates(email, courseName, pageable)
+                .map(s -> new StudentDTO(s.getEmail()));
+        return new PageDTO<>(page);
     }
 }

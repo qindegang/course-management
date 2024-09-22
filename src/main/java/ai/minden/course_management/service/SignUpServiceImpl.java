@@ -6,8 +6,10 @@ import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
 import ai.minden.course_management.repository.CourseRepository;
 import ai.minden.course_management.repository.StudentRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -39,8 +41,18 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Set<Course> findCourses(String email) throws InvalidStudentEmailException {
         return this.findStudent(email).getCourses();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Student> findClassMates(String email, String courseName, Pageable pageable)
+            throws InvalidStudentEmailException, InvalidCourseNameException {
+        final Student student = this.findStudent(email);
+        final Course course = this.findCourse(courseName);
+        return this.studentRepository.findClassMates(student, course, pageable);
     }
 
     private Course findCourse(String courseName) {

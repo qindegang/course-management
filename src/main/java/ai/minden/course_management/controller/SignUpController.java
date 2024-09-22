@@ -1,10 +1,13 @@
 package ai.minden.course_management.controller;
 
 import ai.minden.course_management.dto.CourseDTO;
+import ai.minden.course_management.dto.PageDTO;
 import ai.minden.course_management.dto.SignUpRequest;
+import ai.minden.course_management.dto.StudentDTO;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
 import ai.minden.course_management.facade.SignUpFacade;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.FieldError;
@@ -56,6 +59,20 @@ public class SignUpController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
         }
     }
+
+    @GetMapping(value = "classmates", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PageDTO<StudentDTO> findClassMates(@RequestParam final String email,
+                                              @RequestParam final String course,
+                                              @RequestParam(required = false, defaultValue = "0") final int pageNumber,
+                                              @RequestParam(required = false, defaultValue = "10") final int pageSize)
+            throws InvalidStudentEmailException, InvalidCourseNameException {
+        try {
+            return this.signUpFacade.findClassMates(email, course, PageRequest.of(pageNumber, pageSize));
+        } catch (InvalidStudentEmailException | InvalidCourseNameException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

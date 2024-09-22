@@ -1,6 +1,8 @@
 package ai.minden.course_management.controller;
 
 import ai.minden.course_management.dto.CourseDTO;
+import ai.minden.course_management.dto.PageDTO;
+import ai.minden.course_management.dto.StudentDTO;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
 import ai.minden.course_management.facade.SignUpFacade;
@@ -8,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,11 +25,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SignUpController.class)
 public class SignUpControllerTest {
     private static final String CINDY = "cindy@a.com";
+
+    private static final String ALICE = "alice@a.com";
+    private static final StudentDTO STUDENT_ALICE = new StudentDTO(ALICE);
+
+    private static final String BOB = "bob@a.com";
+    private static final StudentDTO STUDENT_BOB = new StudentDTO(BOB);
+
     private static final String ENGLISH = "English";
     private static final CourseDTO COURSE_ENGLISH = new CourseDTO(ENGLISH);
 
-    private static final String PHYSICS = "Physics";
+    private static final String PHYSICS = "English";
     private static final CourseDTO COURSE_PHYSICS = new CourseDTO(PHYSICS);
+
+    private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
     @Autowired
     private MockMvc mvc;
@@ -124,4 +137,38 @@ public class SignUpControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    public void findClassMates_success() throws Exception {
+        when(signUpFacade.findClassMates(CINDY, ENGLISH, PAGEABLE)).thenReturn(new PageDTO<>(List.of(STUDENT_ALICE, STUDENT_BOB), 2, 1, 0, 10));
+
+        var response = String.format("""
+                {
+                  "content": [{"email":"%s"}, {"email":"%s"}],
+                  "totalElements": 2,
+                  "totalPages": 1,
+                  "number": 0,
+                  "size": 10
+                }""", ALICE, BOB);
+
+        mvc.perform(MockMvcRequestBuilders
+                        .get(String.format("/signups/classmates?email=%s&course=%s", CINDY, ENGLISH)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(response));
+    }
+
+    @Test
+    public void findClassMates_invalidEmail() throws Exception {
+        when(signUpFacade.findClassMates(CINDY, ENGLISH, PAGEABLE)).thenThrow(new InvalidStudentEmailException("dummy"));
+        mvc.perform(MockMvcRequestBuilders
+                        .get(String.format("/signups/classmates?email=%s&course=%s", CINDY, ENGLISH)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void findClassMates_invalidCourse() throws Exception {
+        when(signUpFacade.findClassMates(CINDY, ENGLISH, PAGEABLE)).thenThrow(new InvalidCourseNameException("dummy"));
+        mvc.perform(MockMvcRequestBuilders
+                        .get(String.format("/signups/classmates?email=%s&course=%s", CINDY, ENGLISH)))
+                .andExpect(status().isBadRequest());
+    }
 }

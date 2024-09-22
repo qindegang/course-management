@@ -12,17 +12,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SignUpServiceTest {
     private static final String CINDY = "cindy@a.com";
     private static final String ENGLISH = "English";
+    private static final Pageable PAGEABLE = PageRequest.of(0, 10);
 
     private Course courseEnglish;
     private Student studentCindy;
@@ -115,4 +120,35 @@ public class SignUpServiceTest {
             signUpService.findCourses(CINDY);
         }).isInstanceOf(InvalidStudentEmailException.class);
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void findClassMates_success() {
+        var result = mock(Page.class);
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
+        when(this.courseRepository.findByName(ENGLISH)).thenReturn(Optional.of(courseEnglish));
+        when(this.studentRepository.findClassMates(studentCindy, courseEnglish, PAGEABLE)).thenReturn(result);
+
+        assertThat(signUpService.findClassMates(CINDY, ENGLISH, PAGEABLE)).isSameAs(result);
+    }
+
+    @Test
+    public void findClassMates_invalidEmail() {
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            signUpService.findClassMates(CINDY, ENGLISH, PAGEABLE);
+        }).isInstanceOf(InvalidStudentEmailException.class);
+    }
+
+    @Test
+    public void findClassMates_invalidCourse() {
+        when(this.courseRepository.findByName(ENGLISH)).thenReturn(Optional.empty());
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
+
+        assertThatThrownBy(() -> {
+            signUpService.findClassMates(CINDY, ENGLISH, PAGEABLE);
+        }).isInstanceOf(InvalidCourseNameException.class);
+    }
+
 }
