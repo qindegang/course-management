@@ -7,6 +7,7 @@ import ai.minden.course_management.dto.StudentDTO;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
 import ai.minden.course_management.facade.SignUpFacade;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ public class SignUpController {
         this.signUpFacade = signUpFacade;
     }
 
+    @Operation(summary = "Sign up for a course, idempotent in that duplicate sign-up throws no error")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void signUp(@RequestBody @Validated SignUpRequest signUpRequest)
@@ -40,6 +42,7 @@ public class SignUpController {
         }
     }
 
+    @Operation(summary = "Cancel sign-up for a course, idempotent in that duplicate cancel throws no error")
     @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancelSignUp(@RequestBody @Validated SignUpRequest signUpRequest)
@@ -51,6 +54,7 @@ public class SignUpController {
         }
     }
 
+    @Operation(summary = "Find all courses a student takes")
     @GetMapping(value = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)
     public Collection<CourseDTO> findCourses(@RequestParam final String email) throws InvalidStudentEmailException {
         try {
@@ -60,6 +64,7 @@ public class SignUpController {
         }
     }
 
+    @Operation(summary = "Find classmates of a student's course, if the student does not take this course, no classmates is returned")
     @GetMapping(value = "classmates", produces = MediaType.APPLICATION_JSON_VALUE)
     public PageDTO<StudentDTO> findClassMates(@RequestParam final String email,
                                               @RequestParam final String course,
