@@ -15,11 +15,15 @@ sign up for courses.
 
 ## Steps:
 
-1. Go to the course-management directory.
+1. Go to the course-management directory and execute the following instructions
 2. ```./mvnw clean install```
 3. ```./mvnw spring-boot:run```
 4. View and try the APIs at <http://localhost:8080/swagger-ui/index.html>
 
 ## Notes:
 
-This project use H2 database, data will not be persisted across restart.
+Work skipped to speed development:
+
+* H2 is used as database without persistence across restart.
+* No logging statements are added.
+* Unit test are implemented but without acceptance test. 
