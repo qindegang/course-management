@@ -98,4 +98,21 @@ public class SignUpServiceTest {
             signUpService.cancelSignUp(CINDY, ENGLISH);
         }).isInstanceOf(InvalidCourseNameException.class);
     }
+
+    @Test
+    public void findCourses_success() {
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
+        studentCindy.getCourses().add(courseEnglish);
+
+        assertThat(signUpService.findCourses(CINDY)).containsExactlyInAnyOrder(courseEnglish);
+    }
+
+    @Test
+    public void findCourses_invalidEmail() {
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            signUpService.findCourses(CINDY);
+        }).isInstanceOf(InvalidStudentEmailException.class);
+    }
 }

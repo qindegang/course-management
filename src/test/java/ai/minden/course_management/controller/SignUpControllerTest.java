@@ -1,5 +1,6 @@
 package ai.minden.course_management.controller;
 
+import ai.minden.course_management.dto.CourseDTO;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
 import ai.minden.course_management.facade.SignUpFacade;
@@ -11,14 +12,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SignUpController.class)
 public class SignUpControllerTest {
     private static final String CINDY = "cindy@a.com";
     private static final String ENGLISH = "English";
+    private static final CourseDTO COURSE_ENGLISH = new CourseDTO(ENGLISH);
+
+    private static final String PHYSICS = "Physics";
+    private static final CourseDTO COURSE_PHYSICS = new CourseDTO(PHYSICS);
 
     @Autowired
     private MockMvc mvc;
@@ -99,4 +106,22 @@ public class SignUpControllerTest {
                         .content(requestBody))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void findCourses_success() throws Exception {
+        when(signUpFacade.findCourses(CINDY)).thenReturn(List.of(COURSE_ENGLISH, COURSE_PHYSICS));
+        mvc.perform(MockMvcRequestBuilders
+                        .get(String.format("/signups/courses?email=%s", CINDY)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(String.format("[{'name':'%s'},{'name':'%s'}]", ENGLISH, PHYSICS)));
+    }
+
+    @Test
+    public void findCourses_invalidEmail() throws Exception {
+        when(signUpFacade.findCourses(CINDY)).thenThrow(new InvalidStudentEmailException("dummy"));
+        mvc.perform(MockMvcRequestBuilders
+                        .get(String.format("/signups/courses?email=%s", CINDY)))
+                .andExpect(status().isBadRequest());
+    }
+
 }

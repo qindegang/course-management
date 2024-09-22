@@ -1,5 +1,6 @@
 package ai.minden.course_management.controller;
 
+import ai.minden.course_management.dto.CourseDTO;
 import ai.minden.course_management.dto.SignUpRequest;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +44,15 @@ public class SignUpController {
         try {
             this.signUpFacade.cancelSignUp(signUpRequest.getEmail(), signUpRequest.getCourse());
         } catch (InvalidStudentEmailException | InvalidCourseNameException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
+    }
+
+    @GetMapping(value = "/courses", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Collection<CourseDTO> findCourses(@RequestParam final String email) throws InvalidStudentEmailException {
+        try {
+            return this.signUpFacade.findCourses(email);
+        } catch (InvalidStudentEmailException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
         }
     }

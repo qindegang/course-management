@@ -1,7 +1,10 @@
 package ai.minden.course_management.facade;
 
+import ai.minden.course_management.dto.CourseDTO;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
+
+import java.util.List;
 
 /**
  * facade for the signup
@@ -27,4 +30,13 @@ public interface SignUpFacade {
      * @throws InvalidCourseNameException   if the course name is invalid
      */
     void cancelSignUp(String email, String courseName) throws InvalidStudentEmailException, InvalidCourseNameException;
+
+    /**
+     * find courses a student takes
+     *
+     * @param email email of the student
+     * @return the courses taken by the student order by name
+     * @throws InvalidStudentEmailException if the email is invalid
+     */
+    List<CourseDTO> findCourses(String email) throws InvalidStudentEmailException;
 }

@@ -9,6 +9,8 @@ import ai.minden.course_management.repository.StudentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @Transactional
 public class SignUpServiceImpl implements SignUpService {
@@ -34,6 +36,11 @@ public class SignUpServiceImpl implements SignUpService {
         final Student student = this.findStudent(email);
         final Course course = this.findCourse(courseName);
         student.cancelSignUp(course);
+    }
+
+    @Override
+    public Set<Course> findCourses(String email) throws InvalidStudentEmailException {
+        return this.findStudent(email).getCourses();
     }
 
     private Course findCourse(String courseName) {

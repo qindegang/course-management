@@ -1,7 +1,10 @@
 package ai.minden.course_management.service;
 
+import ai.minden.course_management.entity.Course;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
+
+import java.util.Set;
 
 /**
  * service for the signup
@@ -26,4 +29,13 @@ public interface SignUpService {
      * @throws InvalidCourseNameException   if the course name is invalid
      */
     void cancelSignUp(String email, String courseName) throws InvalidStudentEmailException, InvalidCourseNameException;
+
+    /**
+     * find courses taken by the student
+     *
+     * @param email email of the student
+     * @return the courses taken by the student
+     * @throws InvalidStudentEmailException if the email is invalid
+     */
+    Set<Course> findCourses(String email) throws InvalidStudentEmailException;
 }
