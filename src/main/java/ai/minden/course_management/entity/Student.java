@@ -14,7 +14,7 @@ import java.util.Set;
 @ToString(of = {"email"})
 @Getter
 @Entity
-@Table(name = "students", schema = "course_management")
+@Table(name = "students")
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class Student {
     private String email;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(schema = "course_management", name = "course_signup", joinColumns = @JoinColumn(name = "student_id"),
+    @JoinTable(name = "course_signup", joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id"))
     private final Set<Course> courses = new HashSet<>();
 

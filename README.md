@@ -7,7 +7,8 @@ sign up for courses.
 
 ## Prerequisites
 
-* JDK: [OpenJDK 21](https://openjdk.org/projects/jdk/21/)
+* [OpenJDK 21](https://openjdk.org/projects/jdk/21/)
+* [Docker](https://www.docker.com/)
 
 ## Environment Variables
 
@@ -15,15 +16,20 @@ sign up for courses.
 
 ## Steps:
 
-1. Go to the course-management directory and execute the following instructions
-2. ```./mvnw clean install```
-3. ```./mvnw spring-boot:run```
+1. Download official docker image for MySQL:\
+   ```$ docker pull mysql```
+2. Run docker container for MySQL:\
+   ```$ docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=course_management -d mysql```
+3. Go to the course-management directory and execute the following instructions:\
+   ```$ ./mvnw clean install```\
+   ```$ ./mvnw spring-boot:run```
 4. View and try the APIs at <http://localhost:8080/swagger-ui/index.html>
 
 ## Notes:
 
 Work skipped to speed development:
 
-* H2 is used as database without persistence across restart.
+* Database tables are created and populated with sample data (documented in Swagger) upon server start, no database
+  migration strategy is implemented.
 * No logging statements are added.
-* Unit test are implemented but without acceptance test. 
+* Unit tests are implemented but without acceptance test. 

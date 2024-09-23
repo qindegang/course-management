@@ -14,7 +14,7 @@ import java.util.Set;
 @ToString(of = {"name"})
 @Getter
 @Entity
-@Table(name = "courses", schema = "course_management")
+@Table(name = "courses")
 public class Course {
 
     @Id

@@ -1,16 +1,18 @@
-CREATE SCHEMA course_management;
+DROP TABLE IF EXISTS course_signup;
+DROP TABLE IF EXISTS students;
+DROP TABLE IF EXISTS courses;
 
-CREATE TABLE IF NOT EXISTS course_management.students (
+CREATE TABLE students (
   id BIGINT NOT NULL AUTO_INCREMENT,
   email VARCHAR(100) NOT NULL UNIQUE,
   PRIMARY KEY (id));
 
-CREATE TABLE IF NOT EXISTS course_management.courses (
+CREATE TABLE courses (
   id BIGINT NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL UNIQUE,
   PRIMARY KEY (id));
 
-CREATE TABLE IF NOT EXISTS course_management.course_signup (
+CREATE TABLE course_signup (
   student_id BIGINT NOT NULL,
   course_id BIGINT NOT NULL,
   PRIMARY KEY (student_id, course_id),
