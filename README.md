@@ -17,9 +17,9 @@ sign up for courses.
 ## Steps:
 
 1. Go to the course-management directory and execute the following instructions:\
-   ```$ docker-compose up```\
    ```$ ./mvnw clean install```\
-   ```$ ./mvnw spring-boot:run```
+   ```$ ./mvnw spring-boot:build-image```\
+   ```$ docker-compose up```\
 2. View and try the APIs at <http://localhost:8080/swagger-ui/index.html>
 
 ## Notes:

@@ -1,9 +1,21 @@
-version: '3.8'
 services:
-  mysql:
-    image: mysql:latest
+  course-management-service:
+    depends_on:
+      - mysql-db
+    image: course-management:0.0.1-SNAPSHOT
     ports:
-      - "3306:3306"
+      - '8080:8080'
+    environment:
+      - DB_HOST=mysql-db
+      - DB_NAME=course_management
+      - DB_USER=root
+      - DB_PASSWORD=password
+
+
+  mysql-db:
+    image: mysql
+    ports:
+      - '3306:3306'
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=course_management
