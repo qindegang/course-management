@@ -7,7 +7,7 @@ import ai.minden.course_management.exception.InvalidStudentEmailException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * service for the signup
@@ -40,7 +40,7 @@ public interface SignUpService {
      * @return the courses taken by the student
      * @throws InvalidStudentEmailException if the email is invalid
      */
-    Set<Course> findCourses(String email) throws InvalidStudentEmailException;
+    List<Course> findCourses(String email) throws InvalidStudentEmailException;
 
     /**
      * find classmates of a student's course, if the student does not take this course, no classmates is returned

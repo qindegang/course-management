@@ -12,7 +12,7 @@ CREATE TABLE courses (
   name VARCHAR(100) NOT NULL UNIQUE,
   PRIMARY KEY (id));
 
-CREATE TABLE course_signup (
+CREATE TABLE course_signups (
   student_id BIGINT NOT NULL,
   course_id BIGINT NOT NULL,
   PRIMARY KEY (student_id, course_id),

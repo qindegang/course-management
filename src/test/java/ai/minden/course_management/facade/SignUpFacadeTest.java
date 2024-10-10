@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -50,7 +49,7 @@ public class SignUpFacadeTest {
 
     @Test
     public void findCourses() {
-        when(signUpService.findCourses(CINDY)).thenReturn(Set.of(COURSE_ENGLISH));
+        when(signUpService.findCourses(CINDY)).thenReturn(List.of(COURSE_ENGLISH));
 
         var courses = signUpFacade.findCourses(CINDY);
 

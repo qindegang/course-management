@@ -22,20 +22,10 @@ public class Student {
 
     private String email;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "course_signup", joinColumns = @JoinColumn(name = "student_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id"))
-    private final Set<Course> courses = new HashSet<>();
+    @OneToMany(mappedBy = "student")
+    private final Set<SignUp> signUps = new HashSet<>();
 
     public Student(String email) {
         this.email = email;
-    }
-
-    public void signUp(final Course course) {
-        this.courses.add(course);
-    }
-
-    public void cancelSignUp(final Course course) {
-        this.courses.remove(course);
     }
 }

@@ -1,10 +1,12 @@
 package ai.minden.course_management.service;
 
 import ai.minden.course_management.entity.Course;
+import ai.minden.course_management.entity.SignUp;
 import ai.minden.course_management.entity.Student;
 import ai.minden.course_management.exception.InvalidCourseNameException;
 import ai.minden.course_management.exception.InvalidStudentEmailException;
 import ai.minden.course_management.repository.CourseRepository;
+import ai.minden.course_management.repository.SignUpRepository;
 import ai.minden.course_management.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,12 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SignUpServiceTest {
@@ -39,7 +41,11 @@ public class SignUpServiceTest {
     private StudentRepository studentRepository;
 
     @Mock
-    CourseRepository courseRepository;
+    private CourseRepository courseRepository;
+
+    @Mock
+    private SignUpRepository signUpRepository;
+
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +59,7 @@ public class SignUpServiceTest {
         when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
 
         signUpService.signUp(CINDY, ENGLISH);
-        assertThat(studentCindy.getCourses()).contains(courseEnglish);
+        verify(this.signUpRepository).save(new SignUp(studentCindy, courseEnglish));
     }
 
     @Test
@@ -77,12 +83,24 @@ public class SignUpServiceTest {
 
     @Test
     public void cancelSignUp_success() {
+        final var signUp = mock(SignUp.class);
         when(this.courseRepository.findByName(ENGLISH)).thenReturn(Optional.of(courseEnglish));
         when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
-        studentCindy.getCourses().add(courseEnglish);
+        when(this.signUpRepository.findById(new SignUp.Id(studentCindy.getId(), courseEnglish.getId()))).thenReturn(Optional.of(signUp));
 
         signUpService.cancelSignUp(CINDY, ENGLISH);
-        assertThat(studentCindy.getCourses()).doesNotContain(courseEnglish);
+        verify(this.signUpRepository).delete(signUp);
+    }
+
+    @Test
+    public void cancelSignUp_not_exist() {
+        final var signUp = mock(SignUp.class);
+        when(this.courseRepository.findByName(ENGLISH)).thenReturn(Optional.of(courseEnglish));
+        when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
+        when(this.signUpRepository.findById(new SignUp.Id(studentCindy.getId(), courseEnglish.getId()))).thenReturn(Optional.empty());
+
+        signUpService.cancelSignUp(CINDY, ENGLISH);
+        verify(this.signUpRepository, never()).delete(signUp);
     }
 
     @Test
@@ -107,8 +125,7 @@ public class SignUpServiceTest {
     @Test
     public void findCourses_success() {
         when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
-        studentCindy.getCourses().add(courseEnglish);
-
+        when(this.courseRepository.findCourses(studentCindy)).thenReturn(List.of(courseEnglish));
         assertThat(signUpService.findCourses(CINDY)).containsExactlyInAnyOrder(courseEnglish);
     }
 
@@ -127,7 +144,7 @@ public class SignUpServiceTest {
         var result = mock(Page.class);
         when(this.studentRepository.findByEmail(CINDY)).thenReturn(Optional.of(studentCindy));
         when(this.courseRepository.findByName(ENGLISH)).thenReturn(Optional.of(courseEnglish));
-        when(this.studentRepository.findClassMates(studentCindy, courseEnglish, PAGEABLE)).thenReturn(result);
+        when(this.signUpRepository.findClassMates(studentCindy, courseEnglish, PAGEABLE)).thenReturn(result);
 
         assertThat(signUpService.findClassMates(CINDY, ENGLISH, PAGEABLE)).isSameAs(result);
     }

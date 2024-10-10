@@ -23,8 +23,8 @@ public class Course {
 
     private String name;
 
-    @ManyToMany(mappedBy = "courses")
-    private final Set<Student> students = new HashSet<>();
+    @OneToMany(mappedBy = "course")
+    private final Set<SignUp> signUps = new HashSet<>();
 
     public Course(String name) {
         this.name = name;
