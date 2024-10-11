@@ -28,7 +28,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      * @param student the student
      * @return the courses taken by this student
      */
-    @Query(value = "select u.course from Student s join s.signUps u where s=:student order by u.course.name")
+    @Query(value = "select u.course from SignUp u join u.student s where s=:student order by u.course.name")
     List<Course> findCourses(@Param("student") Student student);
 
 }
